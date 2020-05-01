@@ -60,7 +60,6 @@ public class SplitProject {
             assert reader != null;
             reader.close();
         }
-
     }
     public static void numberOfCharacters(boolean name, int number, String outputName, String inputName) {
         File input = new File(inputName);
