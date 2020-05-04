@@ -53,8 +53,8 @@ public class Parser {
 
         try {
             if (rows > 0) SplitProject.numberOfLine(outputNames, rows, out, arguments.get(1));
-            if (rows > 0) SplitProject.numberOfCharacters(outputNames, characters, out, arguments.get(1));
-            if (rows > 0) SplitProject.numberOfFiles(outputNames, files, out, arguments.get(1));
+            if (characters > 0) SplitProject.numberOfCharacters(outputNames, characters, out, arguments.get(1));
+            if (files > 0) SplitProject.numberOfFiles(outputNames, files, out, arguments.get(1));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("");
