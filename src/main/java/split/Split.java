@@ -1,5 +1,6 @@
-import java.io.*;
+package split;
 
+import java.io.*;
 
 class Split {
     public static void main(String[] args){

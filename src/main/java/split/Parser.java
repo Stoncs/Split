@@ -1,3 +1,5 @@
+package split;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -62,8 +64,10 @@ public class Parser {
         initialName = flagD ? outputName + "1" : outputName + "aa";     //название первого выходного файла
         writer = new BufferedWriter(new FileWriter("Files\\" + initialName));
         if (line) {
-            while ((str = reader.readLine()) != null)       //записываем в файлы строки
-                writeToFile(str + "\n", size);
+            while ((str = reader.readLine()) != null) {       //записываем в файлы строки
+                if (size == count) writeToFile(str, size);
+                else writeToFile("\n" + str, size);
+            }
         }
          else {
             while ((ch = reader.read()) != -1)      //записываем в файлы символы
@@ -74,6 +78,7 @@ public class Parser {
     public void parseArgs(String[] args) throws IOException {
         CmdLineParser parser = new CmdLineParser(this);
         count = 0;
+        int ch;
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
@@ -88,7 +93,8 @@ public class Parser {
         else if (numberCharacters != -1) workOutputFile(false, numberCharacters);       //установлен флаг -c, работаем с кол-вом символов
         else if (numberFile != -1) {        //установлен флаг -n, работаем с кол-вом файлов
             int numberCharsInFile = 0;
-            while (reader.read() != -1) numberCharsInFile++;        //считаем кол-во символов в исходном файле
+            while ((ch = reader.read()) != -1)
+                if (!("" + ch).equals("\n")) numberCharsInFile++;        //считаем кол-во символов в исходном файле
             reader.close();
             reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
             numberCharacters = (int) Math.ceil((double) numberCharsInFile / numberFile);        //считаем кол-во символов в одном файле
