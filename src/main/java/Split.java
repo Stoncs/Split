@@ -1,7 +1,7 @@
 import java.io.*;
 
 
-class Main {
+class Split {
     public static void main(String[] args){
         Parser parser = new Parser();
         try {
