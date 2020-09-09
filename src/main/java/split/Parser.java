@@ -32,6 +32,35 @@ public class Parser {
     @Argument(required = true, usage = "Input file name", metaVar = "InputName")
     String inputFileName;
 
+    public void parseArgs(String[] args) throws IOException {
+        CmdLineParser parser = new CmdLineParser(this);
+        count = 0;
+        int ch;
+        try {
+            parser.parseArgument(args);
+        } catch (CmdLineException e) {
+            System.err.println(e.getMessage());
+            System.err.println("\nExample: split [-d] [-l num | -c num | -n num] [-o outputName] inputName");
+            parser.printUsage(System.err);
+            throw new IllegalArgumentException("");
+        }
+        reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
+        if (outputName.equals("-")) outputName = inputFileName;
+        if (numberLines != -1) workOutputFile(true, numberLines);       //установлен флаг -l, работаем с кол-вом строк
+        else if (numberCharacters != -1) workOutputFile(false, numberCharacters);       //установлен флаг -c, работаем с кол-вом символов
+        else if (numberFile != -1) {        //установлен флаг -n, работаем с кол-вом файлов
+            int numberCharsInFile = 0;
+            while ((ch = reader.read()) != -1)
+                if (!("" + ch).equals("\n")) numberCharsInFile++;        //считаем кол-во символов в исходном файле
+            reader.close();
+            reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
+            numberCharacters = (int) Math.ceil((double) numberCharsInFile / numberFile);        //считаем кол-во символов в одном файле
+            workOutputFile(false, numberCharacters);        //работаем с кол-вом символов
+        }
+        else workOutputFile(true, 100);     //если флаги не стоят, то в выходных файлах 100 строк
+        reader.close();
+        writer.close();
+    }
 
     private String getOutputNameCharChar() {        //формирование названия файла, если флаг -d не стоит
         String name = outputName;
@@ -73,35 +102,5 @@ public class Parser {
             while ((ch = reader.read()) != -1)      //записываем в файлы символы
                 writeToFile("" + (char) ch, size);
         }
-    }
-
-    public void parseArgs(String[] args) throws IOException {
-        CmdLineParser parser = new CmdLineParser(this);
-        count = 0;
-        int ch;
-        try {
-            parser.parseArgument(args);
-        } catch (CmdLineException e) {
-            System.err.println(e.getMessage());
-            System.err.println("\nExample: split [-d] [-l num | -c num | -n num] [-o outputName] inputName");
-            parser.printUsage(System.err);
-            throw new IllegalArgumentException("");
-        }
-        reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
-        if (outputName.equals("-")) outputName = inputFileName;
-        if (numberLines != -1) workOutputFile(true, numberLines);       //установлен флаг -l, работаем с кол-вом строк
-        else if (numberCharacters != -1) workOutputFile(false, numberCharacters);       //установлен флаг -c, работаем с кол-вом символов
-        else if (numberFile != -1) {        //установлен флаг -n, работаем с кол-вом файлов
-            int numberCharsInFile = 0;
-            while ((ch = reader.read()) != -1)
-                if (!("" + ch).equals("\n")) numberCharsInFile++;        //считаем кол-во символов в исходном файле
-            reader.close();
-            reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
-            numberCharacters = (int) Math.ceil((double) numberCharsInFile / numberFile);        //считаем кол-во символов в одном файле
-            workOutputFile(false, numberCharacters);        //работаем с кол-вом символов
-        }
-        else workOutputFile(true, 100);     //если флаги не стоят, то в выходных файлах 100 строк
-        reader.close();
-        writer.close();
     }
 }
