@@ -9,5 +9,8 @@
         <module name="Split" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Split" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
