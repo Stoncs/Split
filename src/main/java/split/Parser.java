@@ -8,7 +8,7 @@ import org.kohsuke.args4j.Option;
 import java.io.*;
 
 public class Parser {
-    private int numberOutputFile, prNumberOutputFile;     //текущий номер файла и предыдущий
+    private int numberOutputFile;    //текущий номер файла
     private int count;      //счётчик, сколько осталось напечатать строк/символов
     private BufferedReader reader;
     private  BufferedWriter writer;
@@ -44,63 +44,62 @@ public class Parser {
             parser.printUsage(System.err);
             throw new IllegalArgumentException("");
         }
-        reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
+
         if (outputName.equals("-")) outputName = inputFileName;
         if (numberLines != -1) workOutputFile(true, numberLines);       //установлен флаг -l, работаем с кол-вом строк
         else if (numberCharacters != -1) workOutputFile(false, numberCharacters);       //установлен флаг -c, работаем с кол-вом символов
         else if (numberFile != -1) {        //установлен флаг -n, работаем с кол-вом файлов
-            int numberCharsInFile = 0;
-            while ((ch = reader.read()) != -1)
-                if (!("" + ch).equals("\n")) numberCharsInFile++;        //считаем кол-во символов в исходном файле
-            reader.close();
             reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
-            numberCharacters = (int) Math.ceil((double) numberCharsInFile / numberFile);        //считаем кол-во символов в одном файле
-            workOutputFile(false, numberCharacters);        //работаем с кол-вом символов
+            int countLine = 0;
+            while (reader.readLine() != null) countLine++;      //считаем кол-во строк в исходном файле
+            int countLineInFile = (int) Math.ceil((double) countLine / numberFile);     //считаем кол-во строк в одном файле
+            workOutputFile(true, countLineInFile);      //работаем с кол-вом символов
+
         }
         else workOutputFile(true, 100);     //если флаги не стоят, то в выходных файлах 100 строк
         reader.close();
         writer.close();
     }
 
-    private String getOutputNameCharChar() {        //формирование названия файла, если флаг -d не стоит
+    private String getOutputName() {        //формирование названия файла, если флаг -d не стоит
         String name = outputName;
-        if (numberOutputFile < 27) name += "a" + (char) ((int) 'a' + numberOutputFile - 1);
-        else name += (char) ((int) 'a' + (numberOutputFile - 1) / 26) + "" +  (char) ((int) 'a' + (numberOutputFile - 1) % 26);
+        if (flagD) {
+            name += nameOfFile;
+        } else {
+            name += (char) ((int) 'a' + (numberOutputFile - 1) / 26) + "" +  (char) ((int) 'a' + (numberOutputFile - 1) % 26);
+        }
         return name;
-    }
-
-    private void writeToFile(String text, int size) throws IOException {
-        if (numberOutputFile - prNumberOutputFile > 1 ) {       //если номер текущего файла изменился, создаём новый
-            prNumberOutputFile++;
-            writer = new BufferedWriter(new FileWriter("Files\\" + nameOfFile));
-        }
-        writer.write(text);
-        if (!text.equals("\n")) count--;
-        if (count == 0) {       //когда напечатали всё
-            writer.close();
-            numberOutputFile++;     //увеличиваем номер файла
-            nameOfFile = flagD ? outputName + numberOutputFile : getOutputNameCharChar();       //имя следующего файла
-            count = size;       //кол-во строк/символов, которое надо напечатать в следующем файле
-        }
     }
 
     private void workOutputFile(boolean line, int size) throws IOException {
         int ch;       //код символа
         String initialName, str;    //начальное имя, строка
-        prNumberOutputFile = 0;     //инициализация текущего
-        numberOutputFile = 1;       //и предыдущего номера файла
-        count = size;       //кол-во символо/строк, которые надо напечатать
-        initialName = flagD ? outputName + "1" : outputName + "aa";     //название первого выходного файла
-        writer = new BufferedWriter(new FileWriter("Files\\" + initialName));
-        if (line) {
-            while ((str = reader.readLine()) != null) {       //записываем в файлы строки
-                if (size == count) writeToFile(str, size);
-                else writeToFile("\n" + str, size);
+        boolean end = false;        //если true, значит достигли конца файла
+        numberOutputFile = 0;
+        while (!end) {
+            numberOutputFile++;     //увеличиваем счётчик файлов
+            File file = new File("Files\\" + getOutputName());      //создаём файл
+            writer = new BufferedWriter(new FileWriter(file));
+            end = writeToFile(reader, writer, line, size);
+        }
+    }
+
+    private boolean writeToFile(BufferedReader reader, BufferedWriter writer, boolean line, int size) throws IOException {
+        for (int i = 0; i < size; i++) {
+            String str;     //строка
+            int ch;     //код символа
+            if (line) {
+                str = reader.readLine();        //читаем строку из файла
+                if (str != null) {
+                    writer.write(str);      //если не конец исходного файла, записываем
+                } else return true;     //дошли до конца исходного файла
+            } else {
+                ch = reader.read();     //читаем символ из файла
+                if (ch != -1) {
+                    writer.write(ch);       //если не конец исходного файла, записываем
+                } else return true;     //дошли до конца исходного файла
             }
         }
-         else {
-            while ((ch = reader.read()) != -1)      //записываем в файлы символы
-                writeToFile("" + (char) ch, size);
-        }
+        return false;       //исходный файл ещё не кончился
     }
 }

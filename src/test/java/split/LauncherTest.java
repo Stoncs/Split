@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.apache.commons.io.FileUtils.contentEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LauncherTest {
