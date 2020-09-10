@@ -17,9 +17,9 @@ class LauncherTest {
         String[] cmd = "-d -l 5 -o - First".split(" ");     //тест: по строкам, флаг -d, флаг -o "-"
         Launcher.main(cmd);
         assertTrue(contentEquals(new File("Files/First1"), new File("Files/Expected/eFirst1")));
-/*        assertTrue(contentEquals(new File("Files/First2"), new File("Files/Expected/eFirst2")));
+        assertTrue(contentEquals(new File("Files/First2"), new File("Files/Expected/eFirst2")));
         assertTrue(contentEquals(new File("Files/First3"), new File("Files/Expected/eFirst3")));
-        assertTrue(contentEquals(new File("Files/First4"), new File("Files/Expected/eFirst4")));
+        assertTrue(contentEquals(new File("Files/First4"), new File("Files/Expected/eFirst4"))); 
 
         cmd = "-c 30 -o xyz Second".split(" ");     //тест: по символам, флага -d нет, флаг -о "xyz"
         Launcher.main(cmd);
@@ -36,6 +36,5 @@ class LauncherTest {
         assertTrue(new File("Files/xac").exists());
         assertTrue(new File("Files/xad").exists());
         assertTrue(new File("Files/xae").exists());
-*/
     }
 }
