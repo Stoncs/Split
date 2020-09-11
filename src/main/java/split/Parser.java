@@ -44,7 +44,7 @@ public class Parser {
             while ((ch = reader.read()) != -1)
                 if (!("" + ch).equals("\n")) numberCharsInFile++;        //считаем кол-во символов в исходном файле
             reader.close();
-            reader = new BufferedReader(new FileReader("Files\\" + inputFileName + ".txt"));
+            reader = new BufferedReader(new FileReader(new File ("Files\\" + inputFileName + ".txt")));
             numberCharacters = (int) Math.ceil((double) numberCharsInFile / numberFile);        //считаем кол-во символов в одном файле
             workOutputFile(false, numberCharacters);        //работаем с кол-вом символов
         }
