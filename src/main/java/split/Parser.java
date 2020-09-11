@@ -35,7 +35,7 @@ public class Parser {
             parser.printUsage(System.err);
             throw new IllegalArgumentException("");
         }
-        reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
+        reader = new BufferedReader(new FileReader(new File ("Files\\" + inputFileName + ".txt")));
         if (outputName.equals("-")) outputName = inputFileName;
         if (numberLines != -1) workOutputFile(true, numberLines);       //установлен флаг -l, работаем с кол-вом строк
         else if (numberCharacters != -1) workOutputFile(false, numberCharacters);       //установлен флаг -c, работаем с кол-вом символов
@@ -44,7 +44,7 @@ public class Parser {
             while ((ch = reader.read()) != -1)
                 if (!("" + ch).equals("\n")) numberCharsInFile++;        //считаем кол-во символов в исходном файле
             reader.close();
-            reader = new BufferedReader(new FileReader("Files\\" + inputFileName));
+            reader = new BufferedReader(new FileReader("Files\\" + inputFileName + ".txt"));
             numberCharacters = (int) Math.ceil((double) numberCharsInFile / numberFile);        //считаем кол-во символов в одном файле
             workOutputFile(false, numberCharacters);        //работаем с кол-вом символов
         }
@@ -62,7 +62,7 @@ public class Parser {
     private void writeToFile(String text, int size) throws IOException {
         if (numberOutputFile - prNumberOutputFile > 1 ) {       //если номер текущего файла изменился, создаём новый
             prNumberOutputFile++;
-            writer = new BufferedWriter(new FileWriter("Files\\" + nameOfFile));
+            writer = new BufferedWriter(new FileWriter(new File("Files\\" + nameOfFile + ".txt")));
         }
         writer.write(text);
         if (!text.equals("\n")) count--;
@@ -80,11 +80,11 @@ public class Parser {
         numberOutputFile = 1;       //и предыдущего номера файла
         count = size;       //кол-во символо/строк, которые надо напечатать
         initialName = flagD ? outputName + "1" : outputName + "aa";     //название первого выходного файла
-        writer = new BufferedWriter(new FileWriter("Files\\" + initialName));
+        writer = new BufferedWriter(new FileWriter(new File("Files\\" + initialName + ".txt")));
         if (line) {
             while ((str = reader.readLine()) != null) {       //записываем в файлы строки
                 if (size == count) writeToFile(str, size);
-                else writeToFile(System.lineSeparator() + str, size);
+                else writeToFile("\n" + str, size);
             }
         }
         else {
